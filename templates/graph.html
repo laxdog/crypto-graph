@@ -17,12 +17,32 @@ function createChart() {
     Highcharts.setOptions({
         global: { useUTC: false }
     });
-    console.log(seriesOptions)
     Highcharts.stockChart('container', {
+        title: { 
+            text: "BTC"
+        },
         rangeSelector: {
-            selected: 4
+            buttons: [{
+                count: 1,
+                type: 'hour',
+                text: '1h'
+            }, {
+                count: 1,
+                type: 'day',
+                text: '1d'
+            }, {
+                count: 1,
+                type: 'week',
+                text: '1w'
+            }, {
+                type: 'all',
+                text: 'All'
+            }],
         },
         yAxis: {
+            title: { 
+                text: "Best rate (%)"
+            },
             plotLines: [{
                 value: 0,
                 width: 2,
