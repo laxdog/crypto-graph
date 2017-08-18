@@ -6,22 +6,33 @@ import json
 app = Flask(__name__)
 
 
-@app.route("/polo.json")
-def polo():
-    connection = sqlite3.connect("{0}/MACD_testing/market_data/BTC.db".format(os.environ['HOME']))
+def json_min(results):
+    return json.dumps(results, separators=(',', ':'))
+
+
+def run_query(query, db):
+    connection = sqlite3.connect(db)
     cursor = connection.cursor()
-    cursor.execute("SELECT unixtime * 1000, round(rate0 * 100, 5) FROM loans WHERE unixtime % 3 = 0 ORDER BY unixtime ASC;")
-    results = cursor.fetchall()
-    return json.dumps(results)
+    cursor.execute(query)
+    return cursor.fetchall()
+
+
+@app.route("/polo.json")
+@app.route("/crypto-graph/polo.json")
+def polo():
+    db = "polo.db"
+    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 3 = 0 ORDER BY unixtime ASC;"
+    results = run_query(query, db)
+    return json_min(results)
 
 
 @app.route("/finex.json")
+@app.route("/crypto-graph/finex.json")
 def finex():
-    connection = sqlite3.connect("{0}/macd_bitfinex/market_data/BTC.db".format(os.environ['HOME']))
-    cursor = connection.cursor()
-    cursor.execute("SELECT unixtime * 1000, round(rate0 * 100, 5) FROM loans ORDER BY unixtime ASC;")
-    results = cursor.fetchall()
-    return json.dumps(results)
+    db = "finex.db"
+    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans ORDER BY unixtime ASC;"
+    results = run_query(query, db)
+    return json_min(results)
 
 
 @app.route("/")
@@ -30,4 +41,4 @@ def graph():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, threaded=True, host='127.0.0.1', port=3044)
+    app.run(debug=True, threaded=True, host='127.0.0.1', port=3044)
