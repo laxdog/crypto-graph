@@ -10,7 +10,7 @@ app = Flask(__name__)
 def polo():
     connection = sqlite3.connect("{0}/MACD_testing/market_data/BTC.db".format(os.environ['HOME']))
     cursor = connection.cursor()
-    cursor.execute("SELECT unixtime * 1000, rate0 * 100 FROM loans ORDER BY unixtime ASC;")
+    cursor.execute("SELECT unixtime * 1000, round(rate0 * 100, 5) FROM loans WHERE unixtime % 3 = 0 ORDER BY unixtime ASC;")
     results = cursor.fetchall()
     return json.dumps(results)
 
@@ -19,7 +19,7 @@ def polo():
 def finex():
     connection = sqlite3.connect("{0}/macd_bitfinex/market_data/BTC.db".format(os.environ['HOME']))
     cursor = connection.cursor()
-    cursor.execute("SELECT unixtime * 1000, rate0 * 100 FROM loans ORDER BY unixtime ASC;")
+    cursor.execute("SELECT unixtime * 1000, round(rate0 * 100, 5) FROM loans ORDER BY unixtime ASC;")
     results = cursor.fetchall()
     return json.dumps(results)
 
