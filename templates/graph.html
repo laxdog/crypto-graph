@@ -7,7 +7,7 @@
         <script type="text/javascript">
 var seriesOptions = [],
     seriesCounter = 0,
-    names = ['finex', 'polo'];
+    names = ['BTC-finex', 'BTC-polo', 'ETH-finex', 'ETH-polo'];
 
 /**
  * Create the chart when all data is loaded
@@ -19,7 +19,7 @@ function createChart() {
     });
     Highcharts.stockChart('container', {
         title: { 
-            text: "BTC"
+            text: "BTC and ETH, Poloniex vs Bitfinex"
         },
         rangeSelector: {
             buttons: [{
