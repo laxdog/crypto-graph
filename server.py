@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+import functools
 import sqlite3
 import json
 
@@ -16,59 +17,22 @@ def run_query(query, db):
     return cursor.fetchall()
 
 
-@app.route("/polo.json")
-@app.route("/crypto-graph/polo.json")
-def polo():
-    db = "polo.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 10 = 0 ORDER BY unixtime ASC;"
+def generic_get(db, query):
     results = run_query(query, db)
     return json_min(results)
 
-
-@app.route("/finex.json")
-@app.route("/crypto-graph/finex.json")
-def finex():
-    db = "finex.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 2 = 0 ORDER BY unixtime ASC;"
-    results = run_query(query, db)
-    return json_min(results)
-
-
-@app.route("/eth-polo.json")
-@app.route("/crypto-graph/eth-polo.json")
-def eth_polo():
-    db = "ETH-polo.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 60 = 0 ORDER BY unixtime ASC;"
-    results = run_query(query, db)
-    return json_min(results)
-
-
-@app.route("/eth-finex.json")
-@app.route("/crypto-graph/eth-finex.json")
-def eth_finex():
-    db = "ETH-finex.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 60 = 0 ORDER BY unixtime ASC;"
-    results = run_query(query, db)
-    return json_min(results)
-
-
-@app.route("/btc-polo.json")
-@app.route("/crypto-graph/btc-polo.json")
-def btc_polo():
-    db = "BTC-polo.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 60 = 0 ORDER BY unixtime ASC;"
-    results = run_query(query, db)
-    return json_min(results)
-
-
-@app.route("/btc-finex.json")
-@app.route("/crypto-graph/btc-finex.json")
-def btc_finex():
-    db = "BTC-finex.db"
-    query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 60 = 0 ORDER BY unixtime ASC;"
-    results = run_query(query, db)
-    return json_min(results)
-
+routes = {}
+currencies = ["BTC", "ETH", "XMR", "LTC", "DOGE", "MAID", "BTS", "STR", "CLAM", "FCT", "DASH", "XRP", "BCH", "DSH",
+              "ETC", "IOT", "OMG", "ZEC", "EOS", "USD"]
+exchanges = ["POLONIEX", "BITFINEX"]
+#query = "SELECT unixtime, round(rate0 * 100, 5) FROM loans WHERE unixtime % 60 = 0 ORDER BY unixtime ASC;"
+query = "SELECT unixtime, round(rate0 * 100, 3) FROM loans WHERE unixtime ORDER BY unixtime ASC;"
+for cur in currencies:
+    for ex in exchanges:
+        name = "{0}-{1}".format(ex, cur)
+        routes[name] = functools.partial(generic_get, "{0}.db".format(name), query)
+        app.add_url_rule('/{0}'.format(name), name, routes[name])
+        app.add_url_rule('/crypto-graph/{0}'.format(name), name, routes[name])
 
 @app.route("/")
 def graph():

@@ -5,88 +5,180 @@
         <title>Poloniex vs Bitfinex</title>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script type="text/javascript">
-var seriesOptions = [],
-    seriesCounter = 0,
-    names = ['BTC-finex', 'BTC-polo', 'ETH-finex', 'ETH-polo'];
 
-/**
- * Create the chart when all data is loaded
- * @returns {undefined}
- */
-function createChart() {
-    Highcharts.setOptions({
-        global: { useUTC: false }
-    });
-    Highcharts.stockChart('container', {
-        title: { 
-            text: "BTC and ETH, Poloniex vs Bitfinex"
-        },
-        rangeSelector: {
-            buttons: [{
-                count: 1,
-                type: 'hour',
-                text: '1h'
-            }, {
-                count: 1,
-                type: 'day',
-                text: '1d'
-            }, {
-                count: 1,
-                type: 'week',
-                text: '1w'
-            }, {
-                type: 'all',
-                text: 'All'
-            }],
-        },
-        yAxis: {
-            title: { 
-                text: "Best rate (%)"
-            },
-            plotLines: [{
-                value: 0,
-                width: 2,
-                color: 'silver'
-            }]
-        },
-        plotOptions: {
-            series: {
-                showInNavigator: true
-            }
-        },
-        tooltip: {
-            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
-            valueDecimals: 5,
-            split: true
-        },
-        series: seriesOptions
+var global_options = { global: { useUTC: false } };
+
+var range_selector = { buttons: [{ count: 1, type: 'hour', text: '1h' },
+                                 { count: 1, type: 'day', text: '1d' },
+                                 { count: 1, type: 'week', text: '1w' },
+                                 { type: 'all', text: 'All' }],
+                       selected: 1};
+
+var y_axis = { title: { text: "Best rate (%)" },
+               plotLines: [{ value: 0, width: 2, color: 'silver' }]};
+
+var plot_options = { series: { showInNavigator: true } }
+
+var tool_tip = { pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.change}%)<br/>',
+                 valueDecimals: 3, split: true }
+
+var btcSeriesOptions = [],
+    btcSeriesCounter = 0,
+    btcNames = ['BITFINEX-BTC', 'POLONIEX-BTC'];
+
+var ethSeriesOptions = [],
+    ethSeriesCounter = 0,
+    ethNames = ['BITFINEX-ETH', 'POLONIEX-ETH'];
+
+var xmrSeriesOptions = [],
+    xmrSeriesCounter = 0,
+    xmrNames = ['BITFINEX-XMR', 'POLONIEX-XMR'];
+
+var ltcSeriesOptions = [],
+    ltcSeriesCounter = 0,
+    ltcNames = ['BITFINEX-LTC', 'POLONIEX-LTC'];
+
+var dashSeriesOptions = [],
+    dashSeriesCounter = 0,
+    dashNames = ['BITFINEX-DSH', 'POLONIEX-DASH'];
+
+var poloSeriesOptions = [],
+    poloSeriesCounter = 0,
+    poloNames = ["POLONIEX-DOGE", "POLONIEX-MAID", "POLONIEX-BTS", "POLONIEX-STR", "POLONIEX-CLAM", "POLONIEX-FCT", "POLONIEX-XRP"];
+
+var finexSeriesOptions = [],
+    finexSeriesCounter = 0,
+    finexNames = ["BITFINEX-BCH", "BITFINEX-DSH","BITFINEX-ETC", "BITFINEX-IOT", "BITFINEX-OMG", "BITFINEX-ZEC", "BITFINEX-EOS", "BITFINEX-USD", "BITFINEX-XRP"];
+
+
+function btcCreateChart() {
+    Highcharts.setOptions(global_options);
+    Highcharts.stockChart('btcChart', { title: { text: "BTC Poloniex vs Bitfinex" },
+        rangeSelector: range_selector,
+        yAxis: y_axis,
+        plotOptions: plot_options,
+        tooltip: tool_tip,
+        series: btcSeriesOptions
     });
 }
 
-$.each(names, function (i, name) {
-    $.getJSON('/crypto-graph/' + name.toLowerCase() + '.json', function (data) {
-            for (var k in data) {
-                data[k][0] *= 1000;
-            };
-            console.log(data)
-            seriesOptions[i] = {
-                name: name,
-                data: data
-            };
-            // As we're loading the data asynchronously, we don't know what order it will arrive. So
-            // we keep a counter and create the chart when all the data is loaded.
-            seriesCounter += 1;
-            if (seriesCounter === names.length) {
-                createChart();
+$.each(btcNames, function (i, name) {
+    $.getJSON('/crypto-graph/' + name, function (data) {
+            for (var k in data) { data[k][0] *= 1000; };
+            btcSeriesOptions[i] = { name: name, data: data };
+            btcSeriesCounter += 1;
+            if (btcSeriesCounter === btcNames.length) {
+                btcCreateChart();
             }
-            });
+    });
 });
+
+function ethCreateChart() {
+    Highcharts.setOptions(global_options);
+    Highcharts.stockChart('ethChart', { title: { text: "ETH Poloniex vs Bitfinex" },
+        rangeSelector: range_selector,
+        yAxis: y_axis,
+        plotOptions: plot_options,
+        tooltip: tool_tip,
+        series: ethSeriesOptions
+    });
+}
+
+
+$.each(ethNames, function (i, name) {
+    $.getJSON('/crypto-graph/' + name, function (data) {
+            for (var k in data) { data[k][0] *= 1000; };
+            ethSeriesOptions[i] = { name: name, data: data };
+            ethSeriesCounter += 1;
+            if (ethSeriesCounter === ethNames.length) {
+                ethCreateChart();
+            }
+    });
+});
+
+
+function xmrCreateChart() {
+    Highcharts.setOptions(global_options);
+    Highcharts.stockChart('xmrChart', { title: { text: "XMR Poloniex vs Bitfinex" },
+        rangeSelector: range_selector,
+        yAxis: y_axis,
+        plotOptions: plot_options,
+        tooltip: tool_tip,
+        series: xmrSeriesOptions
+    });
+}
+
+
+$.each(xmrNames, function (i, name) {
+    $.getJSON('/crypto-graph/' + name, function (data) {
+            for (var k in data) { data[k][0] *= 1000; };
+            xmrSeriesOptions[i] = { name: name, data: data };
+            xmrSeriesCounter += 1;
+            if (xmrSeriesCounter === xmrNames.length) {
+                xmrCreateChart();
+            }
+    });
+});
+
+
+function poloCreateChart() {
+    Highcharts.setOptions(global_options);
+    Highcharts.stockChart('poloChart', { title: { text: "Other Poloniex coins" },
+        rangeSelector: range_selector,
+        yAxis: y_axis,
+        plotOptions: plot_options,
+        tooltip: tool_tip,
+        series: poloSeriesOptions
+    });
+}
+
+
+$.each(poloNames, function (i, name) {
+    $.getJSON('/crypto-graph/' + name, function (data) {
+            for (var k in data) { data[k][0] *= 1000; };
+            poloSeriesOptions[i] = { name: name, data: data };
+            poloSeriesCounter += 1;
+            if (poloSeriesCounter === poloNames.length) {
+                poloCreateChart();
+            }
+    });
+});
+
+
+function finexCreateChart() {
+    Highcharts.setOptions(global_options);
+    Highcharts.stockChart('finexChart', { title: { text: "Other Bitfinex coins" },
+        rangeSelector: range_selector,
+        yAxis: y_axis,
+        plotOptions: plot_options,
+        tooltip: tool_tip,
+        series: finexSeriesOptions
+    });
+}
+
+
+$.each(finexNames, function (i, name) {
+    $.getJSON('/crypto-graph/' + name, function (data) {
+            for (var k in data) { data[k][0] *= 1000; };
+            finexSeriesOptions[i] = { name: name, data: data };
+            finexSeriesCounter += 1;
+            if (finexSeriesCounter === finexNames.length) {
+                finexCreateChart();
+            }
+    });
+});
+
+
         </script>
     </head>
     <body>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
         <script src="https://code.highcharts.com/stock/highstock.js"></script>
         <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
-        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="btcChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="ethChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="xmrChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="poloChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="finexChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
     </body>
 </html>
